@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+# vim:fileencoding=utf8
+
+from alp.utils.common import attention
+from alp.utils.getopt import getopt
+from alp.apache.log_parser import LogEntries
+from alp.lql.parser import Parser
+from alp.lql.query import Query
+from alp.errors import *
+
+import logging as log
+
+def main():
+    """
+    XXX: I'm the main and dirtiest function in whole project. Alexey, please, FIXME
+    """
+    options, lql = getopt()
+
+    if options.verbose:
+        log.basicConfig(level=log.DEBUG)
+    else:
+        log.basicConfig(level=log.WARNING)
+
+    entries = LogEntries.from_file(options.filename)
+    results = Query(lql[0]).execute(entries)
+    for entry in results:
+        print repr(entry)
+        from time import sleep
+        sleep(1)
+
+if __name__ == '__main__':
+    if __debug__:
+        import pdb
+
+    try: 
+        main()
+    # Another way to do it is to override sys.excepthook
+    except ALPError as e:
+        if isinstance(e, ALPApacheImportError):
+            with attention():
+                log.critical("Can't import log from given file.")
+                log.warning(e)
+        else:
+            log.critical("Known, but unhandled error was raised. This may be a bug. Show it ot SaveTheRbtz@:")
+            log.warning(e)
+    except Exception:
+        with attention():
+            log.critical("Oh. Impossible happened! Please show this miracle to SaveTheRbtz@:")
+        raise
