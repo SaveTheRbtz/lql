@@ -1,17 +1,12 @@
 # vim:fileencoding=utf8
 
 import logging
-from operator import itemgetter, contains
+from operator import itemgetter
 from collections import defaultdict
+from itertools import islice
 from ..errors import *
-import logging as log
 
 log = logging.getLogger(__name__)
-
-def select_(fields, iterable):
-    """Returns only values of given fields from all dicts in iterable"""
-    for row in iterable:
-        yield dict((key,value) for key,value in row.items() if key in fields)
 
 def where_(where, iterable):
     """Returns only items which pass through ``where`` filter"""
@@ -20,13 +15,18 @@ def where_(where, iterable):
         if operator(dict_[field], value):
             yield dict_
 
+def select_(fields, iterable):
+    """Returns only values of given fields from all dicts in iterable"""
+    for row in iterable:
+        yield dict((key,value) for key,value in row.items() if key in fields)
+
+
 def group_by_(field, iterable):
-    """Group by iterable by field"""
-    # XXX:
+    """Group iterable by field"""
     groups = defaultdict(list)
     for dict_ in iterable:
         groups[dict_[field]].append(dict_)
-    return groups
+    return ({field: key, "__groups__": value} for key,value in groups.items())
 
 def order_by_(order, iterable):
     """Sort items by field"""
@@ -63,19 +63,23 @@ class Query():
         if 'WHERE' in self.tokens:
             for condition in self.tokens['WHERE']:
                 result = where_(condition, result)
-
         #
-        # Order output if it was requested
+        # Group by
+        #
+        if 'GROUP BY' in self.tokens:
+            result = group_by_(self.tokens['GROUP BY'], result)
+        #
+        # Order by
         #
         if 'ORDER BY' in self.tokens:
             result = order_by_(self.tokens['ORDER BY'], result)
         #
-        # Limiting is not of the last steps
+        # Limit
         #
         if 'LIMIT' in self.tokens:
-            result = result[:self.tokens['LIMIT']]
+            result = islice(result, self.tokens['LIMIT'])
         #
-        # Final step is to output only filds that were requested
+        # Select
         #
         result = select_(self.tokens['SELECT'], result)
 

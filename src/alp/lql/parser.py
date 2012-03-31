@@ -5,7 +5,6 @@ import logging
 
 from collections import defaultdict
 from operator import contains, ge, gt, le, lt, eq, ne
-from .query import select_, where_, order_by_, group_by_
 from ..errors import *
 
 log = logging.getLogger(__name__)

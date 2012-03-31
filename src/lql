@@ -39,10 +39,10 @@ if __name__ == '__main__':
         if isinstance(e, ALPApacheImportError):
             with attention():
                 log.critical("Can't import log from given file.")
-                log.warning(e)
         else:
-            log.critical("Known, but unhandled error was raised. This may be a bug. Show it ot SaveTheRbtz@:")
-            log.warning(e)
+            with attention():
+                log.critical("Known, but unhandled error was raised. This may be a bug. Show it ot SaveTheRbtz@:")
+        raise
     except Exception:
         with attention():
             log.critical("Oh. Impossible happened! Please show this miracle to SaveTheRbtz@:")
