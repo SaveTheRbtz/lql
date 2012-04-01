@@ -16,10 +16,28 @@ def where_(where, iterable):
             yield dict_
 
 def select_(fields, iterable):
-    """Returns only values of given fields from all dicts in iterable"""
-    for row in iterable:
-        yield dict((key,value) for key,value in row.items() if key in fields)
+    """
+    Returns only values of given fields from all dicts in iterable
 
+    If tuple of (func, arg) is given then we need to run this function.
+    """
+    iterable = list(iterable)
+    new_fields = []
+    for field in fields:
+        if isinstance(field, basestring):
+            new_fields.append(field)
+            continue
+        # Yay what a nice function we've got!
+        func, arg = field
+        func(arg, iterable)
+        new_fields.append("{0}({1})".format(func.__name__.upper(), arg))
+    filter_func = lambda key: key in new_fields
+    # Special handling of SELECT *:
+    # We need to return all fields except of hidden ones that starts with '__'
+    if '*' in new_fields:
+        filter_func = lambda key: not key.startswith('__')
+    for row in iterable:
+        yield dict((key,value) for key,value in row.items() if filter_func(key))
 
 def group_by_(field, iterable):
     """Group iterable by field"""
@@ -34,7 +52,7 @@ def order_by_(order, iterable):
     return sorted(iterable, key=itemgetter(field), reverse=reverse)
 
 class Query():
-    __doc__ = """XXX:"""
+    """Parses and executes query against list of dictionaries(which can be viewed as a table)"""
 
     def __init__(self, query):
         """Init object with specific query"""
@@ -54,33 +72,36 @@ class Query():
         This whole thing should look beautiful if written in functional style
         but it will render it unreadable for most of people... maybe for me too =)
         """
-        # By default we just return iterable
-        result = iterable
+        try:
+            # By default we just return iterable
+            result = iterable
 
-        #
-        # First step is to filter data
-        #
-        if 'WHERE' in self.tokens:
-            for condition in self.tokens['WHERE']:
-                result = where_(condition, result)
-        #
-        # Group by
-        #
-        if 'GROUP BY' in self.tokens:
-            result = group_by_(self.tokens['GROUP BY'], result)
-        #
-        # Order by
-        #
-        if 'ORDER BY' in self.tokens:
-            result = order_by_(self.tokens['ORDER BY'], result)
-        #
-        # Limit
-        #
-        if 'LIMIT' in self.tokens:
-            result = islice(result, self.tokens['LIMIT'])
-        #
-        # Select
-        #
-        result = select_(self.tokens['SELECT'], result)
+            #
+            # First step is to filter data
+            #
+            if 'WHERE' in self.tokens:
+                for condition in self.tokens['WHERE']:
+                    result = where_(condition, result)
+            #
+            # Group by
+            #
+            if 'GROUP BY' in self.tokens:
+                result = group_by_(self.tokens['GROUP BY'], result)
+            #
+            # Select
+            #
+            result = select_(self.tokens['SELECT'], result)
+            #
+            # Order by
+            #
+            if 'ORDER BY' in self.tokens:
+                result = order_by_(self.tokens['ORDER BY'], result)
+            #
+            # Limit
+            #
+            if 'LIMIT' in self.tokens:
+                result = islice(result, self.tokens['LIMIT'])
 
-        return result
+            return result
+        except Exception as e:
+            raise ALPLQLUnknownExecutionError(e, "Got an error while executing query. Query most likely malformed.")

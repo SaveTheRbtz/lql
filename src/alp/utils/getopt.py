@@ -62,11 +62,15 @@ But anyway it was fun to implement such project in such a small time.
 Examples
 ========
 Print up to 10 hits between 10/Mar/2012:04:28:08 and 10/Mar/2012:04:29:08
-ordered by ip
+ordered by ip::
 
     ./lql -f alp/tests/httpd-access-test.log -v \
             'SELECT url,time WHERE time > "10/Mar/2012:04:28:08" and time <=
                 "10/Mar/2012:04:29:08" ORDER BY ip ASC LIMIT 10'
+
+Produce list of requests which URLs contains word siteops::
+
+    SELECT * where url CONTAINS "siteops"
 
 Produce the minimum, maximum, and average CPU for a configurable time segment.
 For example if asked for the these numbers for a 5-minute time period, print
@@ -80,22 +84,21 @@ Produce a list of the URLs called and the average QPS of those URLs::
 
 Produce a list of the top 10 requestors::
 
-    TODO:
+    SELECT IP,COUNT(IP) GROUP BY IP ORDER BY COUNT(IP) LIMIT 10
 
 Produce a list of errors (4xx and 5xx status codes) by URL and their call
 count::
 
-    TODO:
+    SELECT URL,COUNT(URL) WHERE CODE >= "400" AND CODE < "600"
+        GROUP BY URL ORDER BY COUNT(URL)
 
-Produce a percentage report of request types, for example GET, PUT, etc. So if
-there were 100 requests and 95 were GETs and 5 were PUTs::
+Produce a percentage report of request types, for example GET, PUT, etc::
 
-    TODO:
+    SELECT METHOD, PERCENT(METHOD) GROUP BY METHOD ORDER BY PERCENT(METHOD)
 
-Produce a percentage report of response types (200 vs 404 vs 500, etc).
-Format it similar to the above report::
+Produce a percentage report of response types (200 vs 404 vs 500, etc)::
 
-    TODO:
+    SELECT CODE, PERCENT(CODE) GROUP BY CODE ORDER BY PERCENT(CODE)
 
 Bonus Task
 ==========

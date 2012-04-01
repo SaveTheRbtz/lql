@@ -39,6 +39,9 @@ if __name__ == '__main__':
         if isinstance(e, ALPApacheImportError):
             with attention():
                 log.critical("Can't import log from given file.")
+        elif isinstance(e, ALPLQLExecutionError):
+            with attention():
+                log.critical("Can't execute provided query.")
         else:
             with attention():
                 log.critical("Known, but unhandled error was raised. This may be a bug. Show it ot SaveTheRbtz@:")

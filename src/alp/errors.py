@@ -3,6 +3,12 @@
 class ALPError(Exception):
     pass
 
+class ALPLQLExecutionError(ALPError):
+    pass
+
+class ALPLQLUnknownExecutionError(ALPLQLExecutionError):
+    pass
+
 class ALPLQLParserError(ALPError):
     pass
 
