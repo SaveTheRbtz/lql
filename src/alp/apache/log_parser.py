@@ -12,7 +12,7 @@ class LogEntries(object):
     __doc__ = """This is comtainer for parsed log files"""
 
     # "Combined" log format from https://httpd.apache.org/docs/2.4/logs.html
-    # ``time`` is taken without timezone 
+    # ``time`` is taken without timezone
     # FIXME: method/protocol/url could be unavailable if request is too large or broken (414/404)
     default_format = r'(?P<IP>[0-9.:a-f]+) (?P<IDENT>[^ ]+) (?P<USER>[^ ]+) \[(?P<TIME>[^ ]+) [+-][0-9]{4}\] "(?P<METHOD>[A-Z]+) ' + \
                      r'(?P<URL>.+?) (?P<PROTOCOL>.+?)" (?P<CODE>[0-9]+) (?P<SIZE>[-0-9]+) "(?P<REFERER>.+)" "(?P<USERAGENT>.+)"$'

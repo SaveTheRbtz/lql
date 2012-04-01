@@ -62,7 +62,7 @@ if __name__ == '__main__':
     if __debug__:
         import pdb
 
-    try: 
+    try:
         main()
     # Another way to do it is to override sys.excepthook
     except ALPError as e:

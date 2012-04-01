@@ -68,8 +68,8 @@ class TestLQLParser(unittest.TestCase):
 
     def test_group_by(self):
         """GROUP BY tests"""
-        result = Query("select *, COUNT(*) GROUP BY URL ORDER by COUNT(*) LIMIT 1").execute(self.entries) 
-        result2 = Query("select URL, COUNT(*) GROUP BY URL ORDER by COUNT(*) LIMIT 1").execute(self.entries) 
+        result = Query("select *, COUNT(*) GROUP BY URL ORDER by COUNT(*) LIMIT 1").execute(self.entries)
+        result2 = Query("select URL, COUNT(*) GROUP BY URL ORDER by COUNT(*) LIMIT 1").execute(self.entries)
         self.assertEqual(result, result2)
         self.assertEqual(len(list(result)), 1)
         self.assertGreater(result[0]['COUNT(*)'], 0)

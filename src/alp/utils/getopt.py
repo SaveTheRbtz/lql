@@ -8,7 +8,7 @@ def getopt():
     object.
     """
     parser = OptionParser()
-    parser.add_option("-f", "--file", dest="filename", 
+    parser.add_option("-f", "--file", dest="filename",
                       default="/var/log/httpd-access.log",
                       help="access log FILE (default: %default)", metavar="FILE")
     parser.add_option("-v", "--verbose",
