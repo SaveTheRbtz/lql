@@ -8,7 +8,7 @@ from alp.apache.log_parser import LogEntries
 
 CWD = os.path.dirname(os.path.realpath(__file__))
 
-class TestParser(unittest.TestCase):
+class TestApacheParser(unittest.TestCase):
     def setUp(self):
         self.filename = os.path.join(CWD, 'httpd-access-test.log')
         with open(self.filename, 'r', 2**20) as f:
