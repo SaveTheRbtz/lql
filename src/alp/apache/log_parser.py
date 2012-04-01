@@ -55,15 +55,19 @@ class LogEntries(object):
         if log_format is None:
             log_format = LogEntries.default_format
         try:
+            parsed, failed = 0, 0
             with open(filename, 'r', 2**20) as lines:
                 entries = []
-                log.info("Log parsing started")
+                log.debug("Log parsing started")
                 for line in lines:
                     try:
                         entries.append(LogEntries.parse_line(line, log_format))
+                        parsed += 1
                     except ALPApacheParserError as e:
+                        failed += 1
                         log.debug(e)
-                log.info("Log parsing finished")
+                log.debug("Log parsing finished")
+                log.info("Parsed [ {0} ]. FAILED [ {1} ]".format(parsed, failed))
                 return cls(entries)
         except EnvironmentError as e:
             raise ALPApacheImportError(e, "Can't open file: {0}".format(filename))
