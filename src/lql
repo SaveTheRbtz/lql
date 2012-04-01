@@ -21,7 +21,8 @@ def main():
     #
     # Parse command line
     #
-    options, query_list = getopt()
+    parser = getopt()
+    options, query_list = parser.parse_args()
 
     if options.verbose:
         log.basicConfig(level=log.DEBUG)
@@ -30,6 +31,9 @@ def main():
 
     if len(query_list) > 1:
         raise ALPLQLParserError("Multiple queries are unsupported by now (Did you forgot to wrap query with quotes?)")
+    elif not query_list:
+        parser.print_help()
+        exit(2)
 
     #
     # Parse logfile

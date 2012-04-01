@@ -4,8 +4,8 @@ from optparse import OptionParser
 
 def getopt():
     """
-    Parses options via OptionParser, constructs help message and retruns 
-    ``parse_args()`` result.
+    Parses options via OptionParser, constructs help message and retruns parser
+    object.
     """
     parser = OptionParser()
     parser.add_option("-f", "--file", dest="filename", 
@@ -16,10 +16,10 @@ def getopt():
                       help="Be verbose (default: %default)")
     parser.usage = usage.__doc__
 
-    return parser.parse_args()
+    return parser
 
 def usage():
-    r"""%prog -f /path/to/httpd-access.log [-v] [-f ...] 'LQL QUERY'
+    r"""%prog [-v] [-h] -f /path/to/httpd-access.log 'LQL QUERY'
 
 About
 =====

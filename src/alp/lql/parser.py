@@ -90,13 +90,11 @@ class Parser(object):
         #
 
         if not len(query):
-            log.warning("No query given")
-            return tokens
+            raise ALPLQLParserError("No query given")
 
         # All queries should start with SELECT
         if not query.startswith('SELECT'):
-            log.error("No SELECT detected: {0}".format(query))
-            return tokens
+            raise ALPLQLParserError("No SELECT detected: {0}".format(query))
 
         #
         # Then we match all tokens
@@ -164,5 +162,7 @@ class Parser(object):
                     tokens[token] = field, not order
                 else:
                     tokens[token] = match
+        if not tokens:
+            raise ALPLQLParserError("Nothing is parsed in query: {0}".format(query))
         log.info("Resulting tokens: {0}".format(tokens))
         return tokens
