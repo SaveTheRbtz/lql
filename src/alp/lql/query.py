@@ -102,6 +102,8 @@ class Query():
             if 'LIMIT' in self.tokens:
                 result = islice(result, self.tokens['LIMIT'])
 
-            return result
+            # FIXME: Find a way to check for errors without losing generators
+            # bonuses
+            return list(result)
         except Exception as e:
             raise ALPLQLUnknownExecutionError(e, "Got an error while executing query. Query most likely malformed.")

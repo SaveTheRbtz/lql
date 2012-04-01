@@ -11,22 +11,47 @@ from alp.errors import *
 import logging as log
 
 def main():
+    """Simple pipeline:
+        * Parse command line
+        * Parse logfile
+        * Parse query
+        * Execute query
+        * Output the result
     """
-    XXX: I'm the main and dirtiest function in whole project. Alexey, please, FIXME
-    """
-    options, lql = getopt()
+    #
+    # Parse command line
+    #
+    options, query_list = getopt()
 
     if options.verbose:
         log.basicConfig(level=log.DEBUG)
     else:
         log.basicConfig(level=log.WARNING)
 
+    if len(query_list) > 1:
+        raise ALPLQLParserError("Multiple queries are unsupported by now (Did you forgot to wrap query with quotes?)")
+
+    #
+    # Parse logfile
+    #
     entries = LogEntries.from_file(options.filename)
-    results = Query(lql[0]).execute(entries)
+
+    #
+    # Parse query
+    #
+    query_string, = query_list
+    query = Query(query_string)
+
+    #
+    # Execute query
+    #
+    results = query.execute(entries)
+
+    #
+    # Output the result
+    #
     for entry in results:
         print repr(entry)
-        from time import sleep
-        sleep(1)
 
 if __name__ == '__main__':
     if __debug__:
@@ -39,6 +64,9 @@ if __name__ == '__main__':
         if isinstance(e, ALPApacheImportError):
             with attention():
                 log.critical("Can't import log from given file.")
+        elif isinstance(e, ALPLQLParserError):
+            with attention():
+                log.critical("Query parsing failed. Please consult to manual.")
         elif isinstance(e, ALPLQLExecutionError):
             with attention():
                 log.critical("Can't execute provided query.")
