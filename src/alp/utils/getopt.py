@@ -43,9 +43,10 @@ not to see my Mad-SQL/awk/Shell-skilz.
 
 Speed
 =====
-Perfomance was not a concern in this application. Preference was given to
-readability of code. If I wanted it to be fast I should have just used
-MapReduce as it was described above.
+Perfomance was not a concern in this application. Parser and Query classes are
+single-threaded (multiprocessing module could be plugged in though). Preference
+was given to readability of code. If I wanted it to be fast I should have just
+used MapReduce as it was described above.
 
 LQL
 ===
@@ -65,8 +66,7 @@ Print up to 10 hits between 10/Mar/2012:04:28:08 and 10/Mar/2012:04:29:08
 ordered by ip::
 
     ./lql -f alp/tests/httpd-access-test.log -v \
-            'SELECT url,time WHERE time > "10/Mar/2012:04:28:08" and time <=
-                "10/Mar/2012:04:29:08" ORDER BY ip ASC LIMIT 10'
+            'SELECT ip,url,time WHERE time > "10/Mar/2012:04:28:08" and time <= "10/Mar/2012:04:29:08" ORDER BY ip ASC LIMIT 10'
 
 Produce list of requests which URLs contains word siteops::
 
@@ -89,8 +89,7 @@ Produce a list of the top 10 requestors::
 Produce a list of errors (4xx and 5xx status codes) by URL and their call
 count::
 
-    SELECT URL,COUNT(URL) WHERE CODE >= "400" AND CODE < "600"
-        GROUP BY URL ORDER BY COUNT(URL)
+    SELECT URL,COUNT(URL) WHERE CODE >= "400" AND CODE < "600" GROUP BY URL ORDER BY COUNT(URL)
 
 Produce a percentage report of request types, for example GET, PUT, etc::
 
