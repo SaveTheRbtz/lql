@@ -104,7 +104,6 @@ class Parser(object):
         for token, regexp in self.TOKENS.items():
             real_regexp = regexp + self.ANY_TOKEN
             found = re.findall(real_regexp, query)
-            log.debug("Running regexp: {0}".format(real_regexp))
             for match in found:
                 log.debug("Match for token [ {0} ] is [ {1} ]".format(token, match))
                 if token == 'SELECT':
